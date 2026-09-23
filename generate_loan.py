@@ -113,13 +113,13 @@ def calculation_net_balance(debts, number_of_banks):
         sum_debit = 0
         for j in range(number_of_banks):
             sum_credit += debts[i][j]  # (сколько должен банк i другим)
-            sum_debit += debts[j][i]  # (сколько другие должны банку j)
+            sum_debit += debts[j][i]  # (сколько другие должны банку j) - то есть ничто иное как Актив (будет использовано для расчета Capital)
         net_balance.append(sum_debit - sum_credit)
         print(sum_credit)
         print(sum_debit)
         print(net_balance)
 
-    return net_balance
+    return net_balance, sum_debit
 
 # --- Блок генерации балансов банка
 
