@@ -96,6 +96,7 @@ else:
  отрицательное число означает долговое требование  --> банк i должен другим)
 """
 
+
 def calculation_net_balance(debts, number_of_banks):
     """
     Функция рассчитывает нетто. То есть должен ли банк i кому то или ему должны.
@@ -104,9 +105,9 @@ def calculation_net_balance(debts, number_of_banks):
     На вход матрица долгов и кол-во банков.
     На выходе список значений нетто для всех i-ых банков.
     """
-    
+
     net_balance = []
-    
+
     for i in range(number_of_banks):
         sum_credit = 0
         sum_debit = 0
@@ -119,4 +120,40 @@ def calculation_net_balance(debts, number_of_banks):
         print(net_balance)
 
     return net_balance
+
+# --- Блок генерации балансов банка
+
+def calculation_initial_balance(net_balance, min_buffer=10.0, max_buffer=50.0):
+    """
+    Формирует начальные денежные средства и капитал банков.
+
+    net_balance — список чистых межбанковских позиций.
+    min_buffer, max_buffer — границы дополнительного запаса.
+
+    Возвращает cash и capital — два списка в порядке банков.
+    
+    1. cash - сколько свободных денег на счету у банка 
+		(Необходим для далнейшего расчета "Коэффициент абсолютной  ликвидности". Подробнее, см. в "Пояснения_допушения.md")
+	2. capital - сумма cash и активов, то есть кеш и те средства которые банк i получит когда все другие банки вернут деньги
+		(Необходим для расчета других коэффициентов ликвидности)
+    """
+    if not 0 < min_buffer <= max_buffer:
+        raise ValueError("Необходимо: 0 < min_buffer <= max_buffer")
+
+    cash = []
+    capital = []
+
+    for balance in net_balance:
+        buffer = (
+            min_buffer
+            + (max_buffer - min_buffer) * random.betavariate(2, 5)
+        )
+
+        bank_cash = max(0.0, -balance) + buffer
+        bank_capital = bank_cash + balance
+
+        cash.append(round(bank_cash))  			# WARN -- УБРАТЬ ROUND
+        capital.append(round(bank_capital))		# WARN -- УБРАТЬ ROUND
+
+    return cash, capital
 
