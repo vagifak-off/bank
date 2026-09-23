@@ -80,6 +80,8 @@ print(f"Плотность графа (доля связей)", "\t",
 
 if round(1 - total_missing_share, 2) == graph_density:
     print("Всё корректно", "\t", 1 - total_missing_share)
+else:
+    print("Всё НЕ корректно", 1 - total_missing_share, "!=", graph_density)
 
 
 # --- Блок генерации нетто-баланса
