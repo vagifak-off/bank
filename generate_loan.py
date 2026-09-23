@@ -46,3 +46,39 @@ for i, j in selected_edges:
 
 
 print(debts)  # WARN --  убрать
+
+
+# -----------
+
+n = len(debts)
+
+# Количество нулей в каждой строке без диагонали
+zero_counts = [
+    sum(debts[i][j] == 0 for j in range(n) if i != j)
+    for i in range(n)
+]
+
+# Доля отсутствующих связей для каждой строки
+row_missing_shares = [
+    count / (n - 1)
+    for count in zero_counts
+]
+
+# Доля отсутствующих связей во всей матрице
+total_missing_share = sum(zero_counts) / (n * (n - 1))
+
+
+# --- WARN -- Блок проверок (для сстрок - разные значения, для графа = graph_density)
+for i in range(n):
+    print(f"Доля пропусков для строки {i}",
+          "\t", round(row_missing_shares[i], 2))
+
+print("\n")
+
+print(f"Плотность графа (доля связей)", "\t",
+      round(1 - total_missing_share, 2))
+
+if round(1 - total_missing_share, 2) == graph_density:
+    print("Всё корректно", "\t", 1 - total_missing_share)
+    
+# ---
