@@ -180,12 +180,14 @@ def start_network_disruption(detonation_bank_number, debts, cash, capital):
                 2. debts, cash, capital - матрицы, которые предстоит обнулить для i-го банка и вернуть
     """
 
-    # Обнуление i-го
+    # Обнуление i-го банка
     i = detonation_bank_number
     cash[i] = 0
     capital[i] = 0
-    debts[i][:] = [0] * len(debts[i])
-
+    debts[i][:] = [0] * len(debts[i])  # Этот банк никому не должен
+    for row in debts:  # Этому банку никто не должен
+        row[i] = 0
+    
     return debts, cash, capital
 
 
