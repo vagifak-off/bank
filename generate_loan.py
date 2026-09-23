@@ -157,3 +157,14 @@ def calculation_initial_balance(net_balance, min_buffer=10.0, max_buffer=50.0):
 
     return cash, capital
 
+
+# --- ВРЕМЕННЫЙ БЛОК --- Блок формирования Cash и capital. 
+
+
+net_balance = calculation_net_balance(debts, number_of_banks)
+
+cash, capital = calculation_initial_balance(
+    net_balance,
+    min_buffer=10.0,
+    max_buffer=50.0,
+)
