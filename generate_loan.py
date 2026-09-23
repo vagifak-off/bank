@@ -2,6 +2,8 @@ import math
 import json
 from pathlib import Path
 import random
+import numpy as np
+import pandas as pd
 
 # Путь к конфигу, который лежит рядом с этим скриптом
 config_path = Path(__file__).with_name("config.json")
@@ -113,7 +115,8 @@ def calculation_net_balance(debts, number_of_banks):
         sum_debit = 0
         for j in range(number_of_banks):
             sum_credit += debts[i][j]  # (сколько должен банк i другим)
-            sum_debit += debts[j][i]  # (сколько другие должны банку j) - то есть ничто иное как Актив (будет использовано для расчета Capital)
+            # (сколько другие должны банку j) - то есть ничто иное как Актив (будет использовано для расчета Capital)
+            sum_debit += debts[j][i]
         net_balance.append(sum_debit - sum_credit)
         print(sum_credit)
         print(sum_debit)
@@ -141,7 +144,8 @@ def calculation_initial_balance(net_balance, min_buffer=10.0, max_buffer=50.0):
         raise ValueError("Необходимо: 0 < min_buffer <= max_buffer")
 
     cash = []
-    capital = []
+    short_debit = [0] * len(net_balance)  # WARN --> Потом определить механизм идентификации выданных краткосрочных займов 
+    capital = [0] * len(net_balance)
 
     for balance in net_balance:
         buffer = (
@@ -152,8 +156,8 @@ def calculation_initial_balance(net_balance, min_buffer=10.0, max_buffer=50.0):
         bank_cash = max(0.0, -balance) + buffer
         bank_capital = bank_cash + balance
 
-        cash.append(round(bank_cash))  			# WARN -- УБРАТЬ ROUND
-        capital.append(round(bank_capital))		# WARN -- УБРАТЬ ROUND
+        cash.append(round(bank_cash))  			# WARN --> УБРАТЬ ROUND
+    capital = (np.array(cash) + np.array(short_debit)).tolist()
 
     return cash, capital
 
@@ -161,10 +165,13 @@ def calculation_initial_balance(net_balance, min_buffer=10.0, max_buffer=50.0):
 # --- ВРЕМЕННЫЙ БЛОК --- Блок формирования Cash и capital. 
 
 
-net_balance = calculation_net_balance(debts, number_of_banks)
+net_balance = calculation_net_balance(debts, number_of_banks)[0]
 
 cash, capital = calculation_initial_balance(
     net_balance,
     min_buffer=10.0,
     max_buffer=50.0,
 )
+
+
+print(cash, capital)
