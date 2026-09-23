@@ -126,6 +126,7 @@ def calculation_net_balance(debts, number_of_banks):
 
 # --- Блок генерации балансов банка
 
+
 def calculation_initial_balance(net_balance, min_buffer=10.0, max_buffer=50.0):
     """
     Формирует начальные денежные средства и капитал банков.
@@ -133,19 +134,18 @@ def calculation_initial_balance(net_balance, min_buffer=10.0, max_buffer=50.0):
     net_balance — список чистых межбанковских позиций.
     min_buffer, max_buffer — границы дополнительного запаса.
 
-    Возвращает cash и capital — два списка в порядке банков.
-    
-    1. cash - сколько свободных денег на счету у банка 
-		(Необходим для далнейшего расчета "Коэффициент абсолютной  ликвидности". Подробнее, см. в "Пояснения_допушения.md")
-	2. capital - сумма cash и активов, то есть кеш и те средства которые банк i получит когда все другие банки вернут деньги
-		(Необходим для расчета других коэффициентов ликвидности)
+    Возвращает cash и capital — два списка в порядке банков.  
+                1. cash - сколько свободных денег на счету у банка;  
+                        (Необходим для далнейшего расчета "Коэффициент абсолютной  ликвидности". Подробнее, см. в "Пояснения_допушения.md");  
+                2. capital - сумма cash и активов, то есть кеш и те средства которые банк i получит когда все другие банки вернут деньги;  
+                        (Необходим для расчета других коэффициентов ликвидности).  
     """
     if not 0 < min_buffer <= max_buffer:
         raise ValueError("Необходимо: 0 < min_buffer <= max_buffer")
 
     cash = []
-    short_debit = [0] * len(net_balance)  # WARN --> Потом определить механизм идентификации выданных краткосрочных займов 
-    capital = [0] * len(net_balance)
+    # WARN --> short_debit -->  Потом определить механизм идентификации выданных краткосрочных займов
+    short_debit = [0] * len(net_balance)
 
     for balance in net_balance:
         buffer = (
@@ -162,7 +162,7 @@ def calculation_initial_balance(net_balance, min_buffer=10.0, max_buffer=50.0):
     return cash, capital
 
 
-# --- ВРЕМЕННЫЙ БЛОК --- Блок формирования Cash и capital. 
+# --- ВРЕМЕННЫЙ БЛОК --- Блок формирования Cash и capital.
 
 
 net_balance = calculation_net_balance(debts, number_of_banks)[0]
@@ -181,9 +181,9 @@ detonation_bank_number = 1  #
 
 def start_network_disruption(detonation_bank_number, debts, cash, capital):
     """
-	функция для обнуления активов:	
-		1. detonation_bank_number - номер банка который мы подрываем.
-		2. debts, cash, capital - матрицы, которые предстоит обнулить для i-го банка и вернуть
+        функция для обнуления активов:	
+                1. detonation_bank_number - номер банка который мы подрываем.
+                2. debts, cash, capital - матрицы, которые предстоит обнулить для i-го банка и вернуть
     """
 
     # Обнуление i-го
