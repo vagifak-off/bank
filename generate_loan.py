@@ -194,3 +194,20 @@ def start_network_disruption(detonation_bank_number, debts, cash, capital):
 
     return debts, cash, capital
 
+
+def network_recalculation(detonation_bank_number, number_of_banks, debts, net_balance, cash, capital):
+    """
+    Функция пересчитывает все матрицы сети и возвращает обновленные версии.
+
+    WARN --> Capital обнулили и всё,  
+        так как пока что не реализован механизм подсчета коротких зависимостей
+    """
+
+    debts = debts  # он без изменений (обнулили и всё)
+    net_balance = calculation_net_balance(debts, number_of_banks)[0]
+    cash = cash  # он без изменений (обнулили и всё)
+    capital = capital  # он без изменений (обнулили и всё)
+
+    return debts, net_balance, cash, capital
+
+
