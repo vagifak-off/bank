@@ -174,4 +174,23 @@ cash, capital = calculation_initial_balance(
 )
 
 
-print(cash, capital)
+# --- Механизм подрыва
+
+detonation_bank_number = 1  #
+
+
+def start_network_disruption(detonation_bank_number, debts, cash, capital):
+    """
+	функция для обнуления активов:	
+		1. detonation_bank_number - номер банка который мы подрываем.
+		2. debts, cash, capital - матрицы, которые предстоит обнулить для i-го банка и вернуть
+    """
+
+    # Обнуление i-го
+    i = detonation_bank_number
+    cash[i] = 0
+    capital[i] = 0
+    debts[i][:] = [0] * len(debts[i])
+
+    return debts, cash, capital
+
