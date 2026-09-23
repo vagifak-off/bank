@@ -47,7 +47,6 @@ for i, j in selected_edges:
     ))
 
 
-print(debts)  # WARN --  убрать
 
 
 # -----------
@@ -81,9 +80,9 @@ print(f"Плотность графа (доля связей)", "\t",
       round(1 - total_missing_share, 2))
 
 if round(1 - total_missing_share, 2) == graph_density:
-    print("Всё корректно", "\t", 1 - total_missing_share)
+    print("Всё корректно", "\t", round(1 - total_missing_share, 2))
 else:
-    print("Всё НЕ корректно", 1 - total_missing_share, "!=", graph_density)
+    print("Всё НЕ корректно", round(1 - total_missing_share, 2), "!=", graph_density)
 
 
 # --- Блок генерации нетто-баланса
@@ -118,9 +117,6 @@ def calculation_net_balance(debts, number_of_banks):
             # (сколько другие должны банку j) - то есть ничто иное как Актив (будет использовано для расчета Capital)
             sum_debit += debts[j][i]
         net_balance.append(sum_debit - sum_credit)
-        print(sum_credit)
-        print(sum_debit)
-        print(net_balance)
 
     return net_balance, sum_debit
 
