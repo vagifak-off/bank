@@ -82,7 +82,8 @@ print(f"Плотность графа (доля связей)", "\t",
 if round(1 - total_missing_share, 2) == graph_density:
     print("Всё корректно", "\t", round(1 - total_missing_share, 2))
 else:
-    print("Всё НЕ корректно", round(1 - total_missing_share, 2), "!=", graph_density)
+    print("Всё НЕ корректно", round(
+        1 - total_missing_share, 2), "!=", graph_density)
 
 
 # --- Блок генерации нетто-баланса
@@ -133,16 +134,13 @@ def calculation_initial_balance(net_balance, min_buffer=10.0, max_buffer=50.0):
     Возвращает cash и capital — два списка в порядке банков.  
                 1. cash - сколько свободных денег на счету у банка;  
                         (Необходим для далнейшего расчета "Коэффициент абсолютной  ликвидности". Подробнее, см. в "Пояснения_допушения.md");  
-                2. capital - сумма cash и активов, то есть кеш и те средства которые банк i получит когда все другие банки вернут деньги;  
-                        (Необходим для расчета других коэффициентов ликвидности).  
+                2. capital - сумма cash и нетто-баланса  
     """
     if not 0 < min_buffer <= max_buffer:
         raise ValueError("Необходимо: 0 < min_buffer <= max_buffer")
 
     cash = []
-    # WARN --> short_debit -->  Потом определить механизм идентификации выданных краткосрочных займов
-    short_debit = [0] * len(net_balance)
-
+    capital = []
     for balance in net_balance:
         buffer = (
             min_buffer
@@ -153,7 +151,7 @@ def calculation_initial_balance(net_balance, min_buffer=10.0, max_buffer=50.0):
         bank_capital = bank_cash + balance
 
         cash.append(round(bank_cash))  			# WARN --> УБРАТЬ ROUND
-    capital = (np.array(cash) + np.array(short_debit)).tolist()
+        capital.append(round(bank_capital))		# WARN --> УБРАТЬ ROUND
 
     return cash, capital
 
