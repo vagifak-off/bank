@@ -207,3 +207,14 @@ def network_recalculation(detonation_bank_number, number_of_banks, debts, net_ba
     return debts, net_balance, cash, capital
 
 
+def who_is_bankrupt(capital):
+    """
+    Функция принимает на вход Капитал и выводит список всех банкротов после предыдущей волны банкротств.
+    Т.е. получается массив с банкротами (маску), если длина массива равна нулю, сл-но каскад банкротств остановился
+    """
+    bankrupt_list_mask = np.array([False] * len(capital))
+    for index, value in enumerate(capital):
+        if value <= 0:
+            bankrupt_list_mask[index] = True
+
+    return bankrupt_list_mask
