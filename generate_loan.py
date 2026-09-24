@@ -218,3 +218,19 @@ def who_is_bankrupt(capital):
             bankrupt_list_mask[index] = True
 
     return bankrupt_list_mask
+
+
+def how_many_bankruptcies(capital):
+    """
+    Функция принимает капитал. Возвращает флаг: 
+    TRUE --> продолжаем каскад (т.е. новая волна банкротств)
+    FALSE --> каскад банкротств завершен
+    """
+    
+    bankrupt_list_mask = who_is_bankrupt(capital)
+    
+    cascade_extension = False
+    if sum(bankrupt_list_mask) > 0:
+        cascade_extension = True
+    
+    return cascade_extension
