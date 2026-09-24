@@ -168,7 +168,7 @@ cash, capital = calculation_initial_balance(
 )
 
 
-# --- Механизм подрыва
+# --- БЛОК подрыва
 
 detonation_bank_number = 1  #
 
