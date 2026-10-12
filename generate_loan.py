@@ -124,7 +124,7 @@ def calculation_network_characteristics(debts):
 
 # --- Блок вывода характеристик сети
 
-def print_network_characteristics(row_missing_shares, actual_density):
+def print_network_characteristics(row_missing_shares, actual_density, graph_density):
     """
     Функция выводит рассчитанные характеристики сети.
 
@@ -145,6 +145,11 @@ def print_network_characteristics(row_missing_shares, actual_density):
         "Плотность графа (доля связей)",
         "\t", round(actual_density, 6),
     )
+    if round(actual_density, 2) == graph_density:
+        print("Всё корректно", "\t", round(actual_density, 2))
+    else:
+        print("Всё НЕ корректно", round(
+            actual_density, 2), "!=", graph_density)
 
 def calculation_net_balance(debts, number_of_banks):
     """
@@ -221,7 +226,7 @@ def start_network_disruption(detonation_bank_number, debts, cash, capital):
     debts[i][:] = [0] * len(debts[i])  # Этот банк никому не должен
     for row in debts:  # Этому банку никто не должен
         row[i] = 0
-    
+
     return debts, cash, capital
 
 
@@ -260,13 +265,13 @@ def how_many_bankruptcies(capital):
     TRUE --> продолжаем каскад (т.е. новая волна банкротств)
     FALSE --> каскад банкротств завершен
     """
-    
+
     bankrupt_list_mask = who_is_bankrupt(capital)
-    
+
     cascade_extension = False
     if sum(bankrupt_list_mask) > 0:
         cascade_extension = True
-    
+
     return cascade_extension
 
 
@@ -292,7 +297,7 @@ def main():
         median_debt=100.0,
         sigma=0.8,
     )
-    
+
     # --- Блок расчёта характеристик сети
 
     # рассчитываем связность сети
@@ -300,11 +305,12 @@ def main():
         calculation_network_characteristics(debts)
     )
 
-    # --- Блок проверок (для строк - разные значения, для графа = graph_density) -- WARN -- 
+    # --- Блок проверок (для строк - разные значения, для графа = graph_density) -- WARN --
     # выводим характеристики сети
     print_network_characteristics(
         row_missing_shares,
         actual_density,
+        graph_density
     )
 
     # --- Блок формирования нетто-баланса, cash и capital
