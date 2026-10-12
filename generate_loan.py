@@ -122,6 +122,30 @@ def calculation_network_characteristics(debts):
 
     return row_missing_shares, actual_density
 
+# --- Блок вывода характеристик сети
+
+def print_network_characteristics(row_missing_shares, actual_density):
+    """
+    Функция выводит рассчитанные характеристики сети.
+
+    На вход доли отсутствующих связей по строкам и плотность сети.
+    """
+
+    # выводим долю отсутствующих связей для каждого банка
+    for i, share in enumerate(row_missing_shares):
+        print(
+            f"Доля отсутствующих связей для строки {i}",
+            "\t", round(share, 2),
+        )
+
+    print()
+
+    # выводим фактическую плотность всей сети
+    print(
+        "Плотность графа (доля связей)",
+        "\t", round(actual_density, 6),
+    )
+
 def calculation_net_balance(debts, number_of_banks):
     """
     Функция рассчитывает нетто. То есть должен ли банк i кому то или ему должны.
@@ -276,31 +300,12 @@ def main():
         calculation_network_characteristics(debts)
     )
 
-    # --- WARN -- Блок проверок (для строк - разные значения, для графа = graph_density)
-    for i in range(n):
-        print(
-            f"Доля пропусков для строки {i}",
-            "\t",
-            round(row_missing_shares[i], 2),
-        )
-
-    print("\n")
-
-    print(
-        f"Плотность графа (доля связей)",
-        "\t",
-        round(1 - total_missing_share, 2),
+    # --- Блок проверок (для строк - разные значения, для графа = graph_density) -- WARN -- 
+    # выводим характеристики сети
+    print_network_characteristics(
+        row_missing_shares,
+        actual_density,
     )
-
-    if round(1 - total_missing_share, 2) == graph_density:
-        print("Всё корректно", "\t", round(1 - total_missing_share, 2))
-    else:
-        print(
-            "Всё НЕ корректно",
-            round(1 - total_missing_share, 2),
-            "!=",
-            graph_density,
-        )
 
     # --- Блок формирования нетто-баланса, cash и capital
 
