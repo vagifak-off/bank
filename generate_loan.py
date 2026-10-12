@@ -82,6 +82,45 @@ def generate_debt_matrix(
 
     return debts
 
+# --- Блок расчёта характеристик сети
+
+def calculation_network_characteristics(debts):
+    """
+    Функция рассчитывает характеристики связности сети.
+
+    На вход матрица долгов.
+
+    На выход:
+        row_missing_shares — доли отсутствующих связей по строкам;
+        actual_density — фактическая плотность сети.
+
+    Диагональ матрицы в расчётах не учитывается.
+    """
+
+    n = len(debts)
+
+    if n < 2:
+        raise ValueError("Для расчёта плотности необходимо не меньше 2 банков")
+
+    # считаем количество отсутствующих связей в каждой строке
+    zero_counts = [
+        sum(debts[i][j] == 0 for j in range(n) if i != j)
+        for i in range(n)
+    ]
+
+    # рассчитываем долю отсутствующих связей для каждой строки
+    row_missing_shares = [
+        count / (n - 1)
+        for count in zero_counts
+    ]
+
+    # рассчитываем долю отсутствующих связей во всей сети
+    total_missing_share = sum(zero_counts) / (n * (n - 1))
+
+    # рассчитываем долю существующих связей во всей сети
+    actual_density = 1 - total_missing_share
+
+    return row_missing_shares, actual_density
 
 def calculation_net_balance(debts, number_of_banks):
     """
@@ -232,20 +271,10 @@ def main():
     
     # --- Блок расчёта характеристик сети
 
-    # Количество нулей в каждой строке без диагонали
-    zero_counts = [
-        sum(debts[i][j] == 0 for j in range(n) if i != j)
-        for i in range(n)
-    ]
-
-    # Доля отсутствующих связей для каждой строки
-    row_missing_shares = [
-        count / (n - 1)
-        for count in zero_counts
-    ]
-
-    # Доля отсутствующих связей во всей матрице
-    total_missing_share = sum(zero_counts) / (n * (n - 1))
+    # рассчитываем связность сети
+    row_missing_shares, actual_density = (
+        calculation_network_characteristics(debts)
+    )
 
     # --- WARN -- Блок проверок (для строк - разные значения, для графа = graph_density)
     for i in range(n):
