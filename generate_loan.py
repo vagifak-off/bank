@@ -18,6 +18,70 @@ import pandas as pd
  отрицательное число означает долговое требование  --> банк i должен другим)
 """
 
+# --- Блок генерации матрицы долгов
+# WARN --- ПЕРЕПИСАТЬ ПОТОМ ЛОГИКУ логнормально --> ядро-переферия
+# по статье https://arxiv.org/html/1511.08068v3#S2
+
+# Настройки ЛОГНОРМАЛЬНОГО РАСПРЕДЕЛЕНИЯ — пример
+def generate_debt_matrix(
+    number_of_banks,
+    graph_density,
+    median_debt=100.0,
+    sigma=0.8,
+):
+    """
+    Функция создаёт матрицу долгов между банками.
+
+    На вход:
+        number_of_banks — количество банков;
+        graph_density — строгая верхняя граница плотности сети;
+        median_debt — медиана распределения суммы долга;
+        sigma — стандартное отклонение логарифма суммы долга.
+
+    На выходе матрица debts:
+        debts[i][j] — сколько банк i должен банку j.
+    """
+
+    # проверяем параметры генерации
+    if number_of_banks < 2:
+        raise ValueError("Количество банков должно быть не меньше 2")
+
+    if not 0 < graph_density <= 1:
+        raise ValueError("Необходимо: 0 < graph_density <= 1")
+
+    if median_debt <= 0 or sigma < 0:
+        raise ValueError("Необходимо: median_debt > 0 и sigma >= 0")
+
+    n = number_of_banks
+
+    # создаём матрицу без долгов
+    debts = [[0.0 for _ in range(n)] for _ in range(n)]
+
+    # собираем все возможные связи, кроме долгов самому себе
+    possible_edges = [
+        (i, j)
+        for i in range(n)
+        for j in range(n)
+        if i != j
+    ]
+
+    # определяем количество связей для плотности строго ниже заданной
+    edge_count = math.ceil(graph_density * len(possible_edges)) - 1
+
+    # случайно выбираем связи между банками
+    selected_edges = random.sample(possible_edges, edge_count)
+
+    # для каждой выбранной связи генерируем сумму долга
+    for i, j in selected_edges:
+        debts[i][j] = round(
+            random.lognormvariate(
+                math.log(median_debt),
+                sigma,
+            )
+        )  # WARN --> ПОТОМ УБРАТЬ ROUND
+
+    return debts
+
 
 def calculation_net_balance(debts, number_of_banks):
     """
@@ -159,36 +223,13 @@ def main():
     graph_density = config["graph_density"]
 
     # --- Блок генерации матрицы долгов
-    # WARN --- ПЕРЕПИСАТЬ ПОТОМ ЛОГИКУ логнормально --> ядро-переферия
-    # по статье https://arxiv.org/html/1511.08068v3#S2
-
-    # Настройки ЛОГНОРМАЛЬНОГО РАСПРЕДЕЛЕНИЯ — пример
-    n = number_of_banks
-    median_debt = 100.0
-    sigma = .8
-
-    debts = [[0.0 for _ in range(n)] for _ in range(n)]
-
-    # Все возможные направленные связи, кроме долгов самому себе
-    possible_edges = [
-        (i, j)
-        for i in range(n)
-        for j in range(n)
-        if i != j
-    ]
-
-    # Плотность строго меньше graph_density
-    # Предполагаем n >= 2 и 0 < graph_density <= 1
-    edge_count = math.ceil(graph_density * len(possible_edges)) - 1
-
-    selected_edges = random.sample(possible_edges, edge_count)
-
-    for i, j in selected_edges:
-        debts[i][j] = round(random.lognormvariate(  # WARN -- ПОТОМ УБРАТЬ ROUND !!!
-            math.log(median_debt),
-            sigma,
-        ))
-
+    debts = generate_debt_matrix(
+        number_of_banks=config["number_of_banks"],
+        graph_density=config["graph_density"],
+        median_debt=100.0,
+        sigma=0.8,
+    )
+    
     # --- Блок расчёта характеристик сети
 
     # Количество нулей в каждой строке без диагонали
