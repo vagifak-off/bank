@@ -241,20 +241,43 @@ def start_network_disruption(detonation_bank_number, capital):
     return capital_after_shock
 
 
-def network_recalculation(detonation_bank_number, number_of_banks, debts, net_balance, cash, capital):
+def network_recalculation(debts, capital_after_shock, bankrupt_list_mask):
     """
-    Функция пересчитывает все матрицы сети и возвращает обновленные версии.
+    Функция рассчитывает потери от известных банкротов
+    и пересчитывает капитал каждого банка.
 
-    WARN --> Capital обнулили и всё,  
-        так как пока что не реализован механизм подсчета коротких зависимостей
+    На вход:
+        debts — исходная матрица долгов;
+        capital_after_shock — капитал после первоначального шока;
+        bankrupt_list_mask — маска всех уже известных банкротов.
+
+    На выход:
+        capital — капитал после учёта потерь;
+        losses — суммарные потери каждого банка от этих банкротов.
     """
 
-    debts = debts  # он без изменений (обнулили и всё)
-    net_balance = calculation_net_balance(debts, number_of_banks)[0]
-    cash = cash  # он без изменений (обнулили и всё)
-    capital = capital  # он без изменений (обнулили и всё)
+    n = len(debts)
 
-    return debts, net_balance, cash, capital
+    # создаём список потерь для всех банков
+    losses = [0.0] * n
+
+    # перебираем банки-должники
+    for j in range(n):
+
+        # проверяем, обанкротился ли должник
+        if bankrupt_list_mask[j]:
+
+            # добавляем каждому кредитору потерю его требования
+            for i in range(n):
+                losses[i] += debts[j][i]
+
+    # вычитаем потери из капитала после первоначального шока
+    capital = [
+        capital_after_shock[i] - losses[i]
+        for i in range(n)
+    ]
+
+    return capital, losses
 
 
 def who_is_bankrupt(capital):
