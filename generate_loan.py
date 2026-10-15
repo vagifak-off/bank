@@ -344,6 +344,9 @@ def main():
         detonation_bank_number,
         capital,
     )
+    # сравниваем капитал до и после шока
+    print("Капитал до шока:", capital)
+    print("Капитал после шока:", capital_after_shock)
 
 if __name__ == "__main__":
     main()
