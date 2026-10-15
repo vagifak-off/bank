@@ -334,6 +334,16 @@ def main():
         max_buffer=50.0,
     )
 
+    # --- Блок первого подрыва 
+    
+    # выбираем банк для первоначального подрыва
+    detonation_bank_number = 0
+
+    # применяем первоначальный шок
+    capital_after_shock = start_network_disruption(
+        detonation_bank_number,
+        capital,
+    )
 
 if __name__ == "__main__":
     main()
