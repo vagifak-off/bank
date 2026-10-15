@@ -385,6 +385,23 @@ def main():
     print("Банкроты до пересчёта:", bankrupt_list_mask)
     print("Потери банков:", losses)
     print("Капитал после пересчёта:", capital)
+    
+    # определяем всех банкротов по обновлённому капиталу
+    current_bankrupt_mask = who_is_bankrupt(capital)
+
+    # оставляем только тех, кто раньше не был банкротом
+    new_bankrupt_mask = current_bankrupt_mask & ~bankrupt_list_mask
+
+    # определяем, нужна ли следующая волна
+    cascade_extension = how_many_bankruptcies(new_bankrupt_mask)
+
+    # добавляем новых банкротов в общую маску
+    bankrupt_list_mask = bankrupt_list_mask | new_bankrupt_mask
+
+    # выводим результат
+    print("Новые банкроты:", new_bankrupt_mask)
+    print("Все известные банкроты:", bankrupt_list_mask)
+    print("Нужна следующая волна:", cascade_extension)
 
 if __name__ == "__main__":
     main()
