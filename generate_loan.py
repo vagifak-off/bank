@@ -293,20 +293,19 @@ def who_is_bankrupt(capital):
     return bankrupt_list_mask
 
 
-def how_many_bankruptcies(capital):
+def how_many_bankruptcies(new_bankrupt_mask):
     """
-    Функция принимает капитал. Возвращает флаг: 
-    TRUE --> продолжаем каскад (т.е. новая волна банкротств)
-    FALSE --> каскад банкротств завершен
+    Функция определяет, нужна ли следующая волна.
+
+    На вход маска новых банкротов.
+
+    На выход:
+        True — появились новые банкроты;
+        False — новых банкротов нет.
     """
 
-    bankrupt_list_mask = who_is_bankrupt(capital)
-
-    cascade_extension = False
-    if sum(bankrupt_list_mask) > 0:
-        cascade_extension = True
-
-    return cascade_extension
+    # проверяем, появился ли хотя бы один новый банкрот
+    return bool(np.any(new_bankrupt_mask))
 
 
 # --- Основной сценарий программы
