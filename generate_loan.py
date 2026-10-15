@@ -367,9 +367,20 @@ def main():
         detonation_bank_number,
         capital,
     )
+    
     # сравниваем капитал до и после шока
     print("Капитал до шока:", capital)
     print("Капитал после шока:", capital_after_shock)
+    
+    # определяем банкротов после первоначального шока
+    bankrupt_list_mask = who_is_bankrupt(capital_after_shock)
+
+    # рассчитываем потери и обновляем капитал
+    capital, losses = network_recalculation(
+        debts,
+        capital_after_shock,
+        bankrupt_list_mask,
+    )
 
 if __name__ == "__main__":
     main()
