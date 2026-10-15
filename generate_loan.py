@@ -23,6 +23,8 @@ import pandas as pd
 # по статье https://arxiv.org/html/1511.08068v3#S2
 
 # Настройки ЛОГНОРМАЛЬНОГО РАСПРЕДЕЛЕНИЯ — пример
+
+
 def generate_debt_matrix(
     number_of_banks,
     graph_density,
@@ -84,6 +86,7 @@ def generate_debt_matrix(
 
 # --- Блок расчёта характеристик сети
 
+
 def calculation_network_characteristics(debts):
     """
     Функция рассчитывает характеристики связности сети.
@@ -124,6 +127,7 @@ def calculation_network_characteristics(debts):
 
 # --- Блок вывода характеристик сети
 
+
 def print_network_characteristics(row_missing_shares, actual_density, graph_density):
     """
     Функция выводит рассчитанные характеристики сети.
@@ -150,6 +154,7 @@ def print_network_characteristics(row_missing_shares, actual_density, graph_dens
     else:
         print("Всё НЕ корректно", round(
             actual_density, 2), "!=", graph_density)
+
 
 def calculation_net_balance(debts, number_of_banks):
     """
