@@ -381,6 +381,11 @@ def main():
         capital_after_shock,
         bankrupt_list_mask,
     )
+    
+    # выводим результат первого пересчёта
+    print("Банкроты до пересчёта:", bankrupt_list_mask)
+    print("Потери банков:", losses)
+    print("Капитал после пересчёта:", capital)
 
 if __name__ == "__main__":
     main()
