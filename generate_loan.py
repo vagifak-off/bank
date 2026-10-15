@@ -308,6 +308,76 @@ def how_many_bankruptcies(new_bankrupt_mask):
     return bool(np.any(new_bankrupt_mask))
 
 
+# --- Блок распространения банкротств (волны банкротств)
+
+def wave_of_bankruptcies(detonation_bank_number, debts, capital):
+    """
+    Функция запускает первоначальный подрыв и каскад банкротств.
+
+    На вход:
+        detonation_bank_number — индекс первоначального банкрота;
+        debts — исходная матрица долгов;
+        capital — начальные капиталы банков.
+
+    На выход:
+        capital — итоговые капиталы;
+        bankrupt_list_mask — маска всех банкротов;
+        wave_counter — количество выполненных пересчётов.
+    """
+
+    # применяем первоначальный шок один раз
+    capital_after_shock = start_network_disruption(
+        detonation_bank_number,
+        capital,
+    )
+
+    # определяем банкротов после первоначального шока
+    bankrupt_list_mask = who_is_bankrupt(capital_after_shock)
+
+    # задаём начальные параметры цикла
+    wave_counter = 0
+    cascade_extension = True
+
+    print("=== ЗАПУСК КАСКАДА ===")
+    print("Первоначальный банкрот:", detonation_bank_number)
+
+    # продолжаем расчёт, пока появляются новые банкроты
+    while cascade_extension:
+        wave_counter += 1
+
+        # пересчитываем капитал с учётом всех известных банкротов
+        capital, losses = network_recalculation(
+            debts,
+            capital_after_shock,
+            bankrupt_list_mask,
+        )
+
+        # определяем банкротов по обновлённому капиталу
+        current_bankrupt_mask = who_is_bankrupt(capital)
+
+        # оставляем только новых банкротов
+        new_bankrupt_mask = (
+            current_bankrupt_mask & ~bankrupt_list_mask
+        )
+
+        # определяем, нужна ли следующая волна
+        cascade_extension = how_many_bankruptcies(new_bankrupt_mask)
+
+        # добавляем новых банкротов в общую маску
+        bankrupt_list_mask = bankrupt_list_mask | new_bankrupt_mask
+
+        # выводим результаты текущей волны
+        print(f"=== ВОЛНА №{wave_counter} ===")
+        print("Накопленные потери:", losses)
+        print("Капитал:", capital)
+        print("Новые банкроты:", new_bankrupt_mask)
+
+    print("=== КАСКАД ОСТАНОВИЛСЯ ===")
+    print("Количество пересчётов:", wave_counter)
+
+    return capital, bankrupt_list_mask, wave_counter
+
+
 # --- Основной сценарий программы
 
 
