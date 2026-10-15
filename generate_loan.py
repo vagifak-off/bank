@@ -217,22 +217,28 @@ def calculation_initial_balance(net_balance, min_buffer=10.0, max_buffer=50.0):
 # --- БЛОК подрыва
 
 
-def start_network_disruption(detonation_bank_number, debts, cash, capital):
+def start_network_disruption(detonation_bank_number, capital):
     """
-        функция для обнуления активов:	
-                1. detonation_bank_number - номер банка который мы подрываем.
-                2. debts, cash, capital - матрицы, которые предстоит обнулить для i-го банка и вернуть
+    Функция обнуляет капитал выбранного банка.
+
+    На вход:
+        detonation_bank_number — индекс банка, начиная с нуля;
+        capital — начальные капиталы банков.
+
+    На выходе новый список капиталов после первоначального подрыва.
     """
 
-    # Обнуление i-го банка
-    i = detonation_bank_number
-    cash[i] = 0
-    capital[i] = 0
-    debts[i][:] = [0] * len(debts[i])  # Этот банк никому не должен
-    for row in debts:  # Этому банку никто не должен
-        row[i] = 0
+    # проверяем, существует ли банк с таким индексом
+    if not 0 <= detonation_bank_number < len(capital):
+        raise ValueError("Номер банка выходит за границы списка")
 
-    return debts, cash, capital
+    # создаём отдельный список капиталов после подрыва
+    capital_after_shock = capital.copy()
+
+    # обнуляем капитал выбранного банка
+    capital_after_shock[detonation_bank_number] = 0.0
+
+    return capital_after_shock
 
 
 def network_recalculation(detonation_bank_number, number_of_banks, debts, net_balance, cash, capital):
